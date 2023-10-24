@@ -1,8 +1,14 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  // Logger,
+  LoggerService,
+} from '@nestjs/common';
 // import { MyLogger } from './MyLogger';
 // import { MyLogger2 } from './MyLogger2';
 // import { MyLogger3 } from './logger/logger.service';
-import { Logger as WinstonLogger } from 'winston';
+// import { Logger as WinstonLogger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
@@ -11,7 +17,7 @@ export class AppService {
   // private readonly logger: MyLogger = new MyLogger();
   // private readonly logger: MyLogger2 = new MyLogger2();
   // constructor(private myLogger: MyLogger3) {}
-  constructor(@Inject(WINSTON_MODULE_PROVIDER) private logger: WinstonLogger) {}
+  constructor(@Inject(WINSTON_MODULE_PROVIDER) private logger: LoggerService) {}
 
   getHello(): string {
     const mockDto = {
@@ -19,9 +25,14 @@ export class AppService {
       email: 'email@example.com',
       password: 'passw;ord',
     };
-    this.logger.error('level: error', mockDto);
+    try {
+      throw new InternalServerErrorException('test');
+    } catch (e) {
+      // console.log(e);
+      this.logger.error('level: error' + JSON.stringify(mockDto), e);
+    }
     this.logger.warn('level: warn', mockDto);
-    this.logger.info('level: info', mockDto);
+    this.logger.log('level: log', mockDto);
     this.logger.verbose('level: verbose', mockDto);
     this.logger.debug('level: debug', mockDto);
 
